@@ -1,0 +1,2279 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Serkan.dev</title>
+  
+  <!-- FAVICON -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23070b13'/><path d='M34 32 L16 50 L34 68' stroke='%232dd4bf' stroke-width='9' stroke-linecap='round' stroke-linejoin='round' fill='none'/><path d='M66 32 L84 50 L66 68' stroke='%232dd4bf' stroke-width='9' stroke-linecap='round' stroke-linejoin='round' fill='none'/><line x1='56' y1='25' x2='44' y2='75' stroke='%2338bdf8' stroke-width='8' stroke-linecap='round'/></svg>" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;700&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #070b13;
+      --card-bg: rgba(14, 22, 37, 0.75);
+      --accent: #2dd4bf;
+      --accent-glow: rgba(45, 212, 191, 0.45);
+      --blue-accent: #3b82f6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Fare Takipçisi */
+    .cursor-dot, .cursor-circle {
+      position: fixed;
+      top: 0;
+      left: 0;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    .cursor-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .cursor-circle {
+      width: 36px;
+      height: 36px;
+      border: 1.5px solid var(--accent);
+      transition: transform 0.08s ease-out;
+    }
+
+    /* Arka Plan Canvas */
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Navbar */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 16px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(7, 11, 19, 0.85);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* ŞEKİLLİ LOGO */
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      user-select: none;
+      position: relative;
+    }
+    .logo-core {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(45, 212, 191, 0.2), rgba(59, 130, 246, 0.2));
+      border: 1.5px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px var(--accent-glow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .logo-core span {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 1.05rem;
+      background: linear-gradient(135deg, #fff, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .brand-logo:hover .logo-core {
+      transform: scale(1.08) rotate(3deg);
+      box-shadow: 0 0 25px var(--accent-glow);
+    }
+
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .b1 {
+      width: 14px; height: 14px;
+      background: radial-gradient(circle, var(--accent), transparent);
+      border: 1.5px solid var(--accent);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: bubbleExplode1 5s infinite cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .b2 {
+      width: 8px; height: 8px;
+      background: #38bdf8;
+      box-shadow: 0 0 8px #38bdf8;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: bubbleExplode2 5s infinite cubic-bezier(0.25, 0.8, 0.25, 1) 0.15s;
+    }
+    .b3 {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: bubbleExplode3 5s infinite cubic-bezier(0.25, 0.8, 0.25, 1) 0.25s;
+    }
+
+    @keyframes bubbleExplode1 {
+      0%, 82% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+      85% { opacity: 0.9; }
+      93% { transform: translate(-28px, -32px) scale(1.3); opacity: 0.8; }
+      100% { transform: translate(-38px, -48px) scale(0); opacity: 0; }
+    }
+    @keyframes bubbleExplode2 {
+      0%, 82% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+      85% { opacity: 1; }
+      94% { transform: translate(26px, -28px) scale(1.4); opacity: 0.85; }
+      100% { transform: translate(36px, -44px) scale(0); opacity: 0; }
+    }
+    @keyframes bubbleExplode3 {
+      0%, 82% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+      85% { opacity: 0.8; }
+      95% { transform: translate(2px, -34px) scale(1.2); opacity: 0.6; }
+      100% { transform: translate(4px, -52px) scale(0); opacity: 0; }
+    }
+
+    .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+    .brand-title span { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+    .brand-sub {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+      animation: pulseGreen 2s infinite ease-in-out;
+    }
+    @keyframes pulseGreen {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 18px; position: relative; }
+    nav ul { display: flex; list-style: none; gap: 20px; }
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+    }
+    nav a:hover { color: var(--accent); }
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 0%; height: 2px;
+      bottom: -4px; left: 0;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+    nav a:hover::after { width: 100%; }
+
+    /* DİL DEĞİŞTİRİCİ BUTON */
+    .lang-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lang-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* AMBİYANS ÇALAR BUTONU VE AÇILIR MINI PLAYER */
+    .ambient-player-wrapper {
+      position: relative;
+    }
+    .ambient-btn {
+      background: rgba(45, 212, 191, 0.08);
+      border: 1px solid rgba(45, 212, 191, 0.3);
+      color: var(--accent);
+      padding: 7px 15px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+    .ambient-btn:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .ambient-btn.active {
+      background: rgba(45, 212, 191, 0.2);
+      border-color: var(--accent);
+      box-shadow: 0 0 18px var(--accent-glow);
+    }
+    .equalizer-bars {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2.5px;
+      height: 12px;
+    }
+    .eq-bar {
+      width: 2.5px;
+      background: currentColor;
+      border-radius: 1px;
+      height: 3px;
+      transition: height 0.2s ease;
+    }
+    .ambient-btn.active .eq-bar:nth-child(1) { animation: eqAnim1 0.7s infinite alternate ease-in-out; }
+    .ambient-btn.active .eq-bar:nth-child(2) { animation: eqAnim2 0.5s infinite alternate ease-in-out 0.15s; }
+    .ambient-btn.active .eq-bar:nth-child(3) { animation: eqAnim3 0.8s infinite alternate ease-in-out 0.3s; }
+
+    @keyframes eqAnim1 { from { height: 3px; } to { height: 12px; } }
+    @keyframes eqAnim2 { from { height: 2px; } to { height: 10px; } }
+    @keyframes eqAnim3 { from { height: 4px; } to { height: 11px; } }
+
+    /* MINI CYBER MP3 PLAYER */
+    .mini-player-popup {
+      position: absolute;
+      top: calc(100% + 14px);
+      right: 0;
+      width: 270px;
+      background: rgba(11, 20, 35, 0.95);
+      border: 1px solid var(--accent);
+      border-radius: 16px;
+      padding: 16px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 20px var(--accent-glow);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-8px) scale(0.96);
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .mini-player-popup.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    .player-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .track-meta {
+      display: flex;
+      flex-direction: column;
+    }
+    .track-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px;
+      letter-spacing: 0.2px;
+    }
+    .track-status {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      margin-top: 2px;
+    }
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .play-pause-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #04121e;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.2s;
+      flex-shrink: 0;
+    }
+    .play-pause-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 14px var(--accent-glow);
+    }
+    .track-progress-wrapper {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .track-progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .track-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #38bdf8);
+      border-radius: 2px;
+      transition: width 0.1s linear;
+    }
+    .time-indicators {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.62rem;
+      color: var(--text-muted);
+    }
+    .volume-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .volume-slider {
+      flex-grow: 1;
+      -webkit-appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      cursor: pointer;
+    }
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    /* Mini Hacker Terminali */
+    .terminal-toggle {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #0d1b2a;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      font-family: 'Fira Code', monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 999;
+      box-shadow: 0 0 15px var(--accent-glow);
+      transition: var(--transition);
+    }
+    .terminal-toggle:hover {
+      transform: scale(1.1) rotate(5deg);
+      background: var(--accent);
+      color: #04121e;
+    }
+    .terminal-modal {
+      position: fixed;
+      bottom: 85px;
+      left: 25px;
+      width: 390px;
+      height: 290px;
+      background: rgba(7, 11, 19, 0.96);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      backdrop-filter: blur(15px);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 30px var(--accent-glow);
+      transform: scale(0);
+      transform-origin: bottom left;
+      transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
+    .terminal-modal.open { transform: scale(1); }
+    .terminal-header {
+      padding: 8px 14px;
+      background: rgba(45, 212, 191, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+    .close-term { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
+    .terminal-body {
+      flex-grow: 1;
+      padding: 12px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      overflow-y: auto;
+    }
+    .term-hl { color: var(--accent); font-weight: bold; }
+    .terminal-input-line {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+    }
+    .terminal-input-line span { color: var(--accent); margin-right: 6px; }
+    .terminal-input-line input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-family: inherit;
+      width: 100%;
+    }
+
+    /* Hero Bölümü */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 20px 60px;
+      position: relative;
+      z-index: 1;
+    }
+    .profile-avatar-wrapper {
+      position: relative;
+      width: 155px;
+      height: 155px;
+      margin-bottom: 25px;
+      animation: floatAvatar 4s ease-in-out infinite;
+    }
+    .profile-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center top;
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 25px var(--accent-glow), 0 8px 30px rgba(0, 0, 0, 0.7);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .profile-avatar-wrapper:hover .profile-avatar {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px var(--accent-glow), 0 10px 35px rgba(0, 0, 0, 0.8);
+    }
+    .profile-avatar-wrapper::after {
+      content: '';
+      position: absolute;
+      top: -8px; left: -8px; right: -8px; bottom: -8px;
+      border-radius: 50%;
+      border: 1.5px dashed var(--accent);
+      opacity: 0.4;
+      animation: rotateRing 15s linear infinite;
+    }
+
+    @keyframes floatAvatar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    @keyframes rotateRing {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .hero h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 3.8rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -1px;
+    }
+
+    /* Glitch Yazı Efekti */
+    .glitch {
+      position: relative;
+      display: inline-block;
+      color: #fff;
+    }
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+    .glitch::before {
+      left: 2px;
+      text-shadow: -2px 0 #38bdf8;
+      animation: glitchAnim1 2.5s infinite linear alternate-reverse;
+    }
+    .glitch::after {
+      left: -2px;
+      text-shadow: 2px 0 var(--accent);
+      animation: glitchAnim2 3s infinite linear alternate-reverse;
+    }
+    @keyframes glitchAnim1 {
+      0% { clip-path: inset(40% 0 61% 0); }
+      20% { clip-path: inset(92% 0 1% 0); }
+      40% { clip-path: inset(10% 0 85% 0); }
+      60% { clip-path: inset(50% 0 40% 0); }
+      80% { clip-path: inset(80% 0 5% 0); }
+      100% { clip-path: inset(25% 0 58% 0); }
+    }
+    @keyframes glitchAnim2 {
+      0% { clip-path: inset(25% 0 58% 0); }
+      20% { clip-path: inset(70% 0 15% 0); }
+      40% { clip-path: inset(5% 0 90% 0); }
+      60% { clip-path: inset(85% 0 5% 0); }
+      80% { clip-path: inset(35% 0 50% 0); }
+      100% { clip-path: inset(15% 0 75% 0); }
+    }
+
+    .typewriter-container {
+      font-size: 1.35rem;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+      min-height: 38px;
+    }
+    .typewriter-text {
+      color: var(--accent);
+      font-weight: 600;
+      border-right: 2px solid var(--accent);
+      animation: blink 0.7s infinite;
+      padding-right: 5px;
+    }
+    @keyframes blink {
+      0%, 100% { border-color: transparent; }
+      50% { border-color: var(--accent); }
+    }
+    .hero-buttons { display: flex; gap: 18px; justify-content: center; }
+    .btn-main, .btn-secondary {
+      padding: 14px 32px;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-main {
+      background: linear-gradient(90deg, var(--accent) 0%, #38bdf8 100%);
+      color: #04121e;
+      border: none;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+    .btn-main:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 6px 30px var(--accent-glow);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--accent);
+    }
+
+    /* Section Ortak */
+    section { 
+      padding: 90px 10% 80px; 
+      position: relative; 
+      z-index: 1; 
+    }
+    .section-header { display: flex; align-items: center; gap: 15px; margin-bottom: 45px; }
+    .sec-number { color: var(--accent); font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; }
+    .sec-title { font-family: 'Outfit', sans-serif; font-size: 2.3rem; font-weight: 800; color: #fff; }
+    .sec-line { height: 2px; width: 60px; background: linear-gradient(90deg, var(--accent), transparent); }
+
+    /* İstatistik (Özet) Bölümü */
+    .stats-section { padding-top: 40px; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 30px 24px;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      will-change: transform;
+    }
+    .stat-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 18px;
+      background: radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--accent-glow), transparent 45%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 12px 30px -10px var(--accent-glow);
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-shadow: 0 0 15px var(--accent-glow);
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    /* Projeler */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+    }
+    .project-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(12px);
+      position: relative;
+      transition: transform 0.25s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      will-change: transform;
+    }
+    .project-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 18px;
+      background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--accent-glow), transparent 45%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .project-card:hover::before { opacity: 1; }
+    .project-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 10px 30px -10px var(--accent-glow);
+    }
+    .project-preview {
+      width: 100%;
+      height: 180px;
+      background: #091322;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .mockup-ui {
+      width: 85%;
+      height: 80%;
+      background: #0d1b2a;
+      border-radius: 8px;
+      border: 1px solid rgba(45, 212, 191, 0.2);
+      padding: 10px;
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .project-card:hover .mockup-ui { transform: scale(1.05) translateY(-3px); }
+    .ui-top-bar { display: flex; gap: 5px; margin-bottom: 6px; }
+    .ui-dot { width: 6px; height: 6px; border-radius: 50%; background: #334155; }
+    .ui-lines { display: flex; flex-direction: column; gap: 6px; }
+    .ui-line { height: 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.1); }
+    .ui-grid-mock { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .ui-box { height: 38px; border-radius: 4px; background: rgba(45, 212, 191, 0.1); border: 1px dashed rgba(45, 212, 191, 0.3); }
+
+    .project-content { padding: 24px; display: flex; flex-direction: column; flex-grow: 1; }
+    .project-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 10px; color: #fff; }
+    .project-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; flex-grow: 1; line-height: 1.5; }
+    .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+    .tech-tag {
+      background: rgba(45, 212, 191, 0.08);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid var(--accent);
+    }
+    .project-modal-trigger {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-align: left;
+      transition: gap 0.2s ease;
+      padding: 0;
+    }
+    .project-modal-trigger:hover { gap: 12px; }
+
+    /* ORTALANMIŞ, KOMPAKT, 3D SPOTLIGHT CANLI GITHUB KARTI */
+    .github-center-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 45px;
+      width: 100%;
+    }
+    .github-compact-card {
+      width: 100%;
+      max-width: 680px;
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 24px 28px;
+      backdrop-filter: blur(14px);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      will-change: transform;
+    }
+    .github-compact-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 20px;
+      background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--accent-glow), transparent 45%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .github-compact-card:hover::before { opacity: 1; }
+    .github-compact-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 12px 35px -10px var(--accent-glow);
+    }
+    .gh-compact-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .gh-user-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .gh-avatar-small {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+    }
+    .gh-meta-text h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .gh-meta-text p {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.78rem;
+      color: var(--accent);
+    }
+    .gh-pill-metrics {
+      display: flex;
+      gap: 10px;
+    }
+    .gh-badge-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 5px 12px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .gh-badge-chip span {
+      display: block;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1.1;
+    }
+    .gh-badge-chip small {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+    .gh-compact-repos {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .gh-mini-repo-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(7, 11, 19, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .gh-mini-repo-item:hover {
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+    .gh-repo-title {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: #fff;
+      font-weight: 600;
+    }
+    .gh-repo-tags {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: 'Fira Code', monospace;
+    }
+    .gh-footer-btn-row {
+      text-align: right;
+    }
+
+    /* PROJE ÖZET VE DETAY MODALI */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(4, 8, 16, 0.92);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      will-change: opacity;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .modal-box {
+      width: 90%;
+      max-width: 540px;
+      background: #0b1526;
+      border: 1px solid var(--accent);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+      position: relative;
+      transform: scale(0.95);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+    .modal-overlay.open .modal-box { transform: scale(1); }
+    .modal-close-btn {
+      position: absolute;
+      top: 18px; right: 20px;
+      background: none; border: none;
+      color: #fff; font-size: 1.6rem; cursor: pointer;
+    }
+    .modal-chip {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .modal-title { font-size: 1.5rem; color: #fff; margin-bottom: 14px; font-weight: 800; }
+    .modal-desc-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 22px;
+    }
+    .modal-desc-box p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+    .modal-links { display: flex; justify-content: flex-end; }
+
+    /* Yolculuğum & Timeline */
+    .timeline {
+      position: relative;
+      max-width: 820px;
+      margin-left: 20px;
+      padding-left: 35px;
+      border-left: 2px solid var(--accent);
+      opacity: 0.85;
+    }
+    .timeline-item { position: relative; margin-bottom: 45px; }
+    .timeline-dot {
+      position: absolute;
+      left: -45px; top: 4px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--bg-dark);
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      transition: transform 0.3s;
+    }
+    .timeline-item:hover .timeline-dot { transform: scale(1.3); background: var(--accent); }
+    .timeline-date { font-size: 0.85rem; color: var(--accent); font-weight: 600; margin-bottom: 5px; }
+    .timeline-title { font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .timeline-subtitle { font-size: 0.95rem; color: #cbd5e1; font-weight: 500; margin-bottom: 8px; }
+    .timeline-desc { color: var(--text-muted); font-size: 0.92rem; line-height: 1.55; }
+
+    /* İletişim */
+    .contact-container { max-width: 650px; margin: 0 auto; text-align: center; }
+    .contact-subtitle { color: var(--text-muted); margin-bottom: 35px; font-size: 1.05rem; }
+    .contact-form { display: flex; flex-direction: column; gap: 20px; text-align: left; }
+    .form-group-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(14, 22, 37, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      color: #fff;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition);
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      background: linear-gradient(90deg, var(--accent) 0%, #3b82f6 100%);
+      color: #03101c;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--accent-glow);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--accent-glow);
+    }
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .social-pills { 
+      display: flex; 
+      justify-content: center; 
+      flex-wrap: wrap; 
+      gap: 14px; 
+      margin-top: 40px; 
+    }
+    .social-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: var(--transition);
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .social-pill:hover { 
+      border-color: var(--accent); 
+      color: var(--accent); 
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px var(--accent-glow);
+    }
+
+    .email-copy-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 30px;
+      border: 1.5px solid var(--accent);
+      background: rgba(45, 212, 191, 0.08);
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+    .email-copy-pill:hover {
+      transform: translateY(-3px);
+      background: var(--accent);
+      color: #04121e;
+      box-shadow: 0 6px 20px var(--accent-glow);
+    }
+    .email-copy-pill.copied {
+      background: #22c55e !important;
+      border-color: #22c55e !important;
+      color: #04121e !important;
+      box-shadow: 0 0 25px rgba(34, 197, 94, 0.6) !important;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Scroll Görünürlüğü */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.5rem; }
+      nav ul { display: none; }
+      .form-group-row { grid-template-columns: 1fr; }
+      .profile-avatar-wrapper { width: 130px; height: 130px; }
+      .timeline { padding-left: 20px; margin-left: 10px; }
+      .timeline-dot { left: -30px; }
+      .terminal-modal { width: 90vw; left: 5vw; }
+      .mini-player-popup { right: -10px; width: 250px; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="particles-canvas"></canvas>
+
+  <audio id="bgMusic" src="muzik.mp3" loop preload="auto"></audio>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-circle" id="cursorCircle"></div>
+
+  <!-- Mini Hacker Terminali -->
+  <button class="terminal-toggle" id="terminalToggle" title="Terminali Aç (~)">>_</button>
+  <div class="terminal-modal" id="terminalModal">
+    <div class="terminal-header">
+      <span>serkan@dev-terminal: ~</span>
+      <button class="close-term" id="closeTerminal">&times;</button>
+    </div>
+    <div class="terminal-body" id="termOutput">
+      <p>Sistem aktif. Komutlar için <span class="term-hl">'help'</span> yazın.</p>
+    </div>
+    <div class="terminal-input-line">
+      <span>serkan@root:~$ </span>
+      <input type="text" id="termInput" autofocus autocomplete="off" />
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="#hero" class="brand-logo smooth-link">
+      <div class="logo-core">
+        <div class="bubble b1"></div>
+        <div class="bubble b2"></div>
+        <div class="bubble b3"></div>
+        <span>SY</span>
+      </div>
+      <div class="brand-text">
+        <div class="brand-title">Serkan<span>.dev</span></div>
+        <div class="brand-sub">
+          <span class="status-dot"></span> online
+        </div>
+      </div>
+    </a>
+
+    <div class="nav-right">
+      <ul>
+        <li><a href="#hero" class="smooth-link" data-i18n="nav_home">Giriş</a></li>
+        <li><a href="#stats" class="smooth-link" data-i18n="nav_stats">Özet</a></li>
+        <li><a href="#projeler" class="smooth-link" data-i18n="nav_projects">Projeler</a></li>
+        <li><a href="#yolculuk" class="smooth-link" data-i18n="nav_journey">Yolculuğum</a></li>
+        <li><a href="#iletisim" class="smooth-link" data-i18n="nav_contact">İletişim</a></li>
+      </ul>
+
+      <button class="lang-btn" id="langSwitchBtn">EN</button>
+
+      <div class="ambient-player-wrapper">
+        <button class="ambient-btn" id="ambientToggle" title="Ambiyans Müzik Kontrolü">
+          <span class="equalizer-bars">
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+          </span>
+          <span id="ambientBtnText">Ambiyans</span>
+        </button>
+
+        <div class="mini-player-popup" id="miniPlayerPopup">
+          <div class="player-header">
+            <div class="track-meta">
+              <span class="track-name">Travis Scott — MY EYES</span>
+              <span class="track-status" id="trackStatusText">Durduruldu</span>
+            </div>
+          </div>
+
+          <div class="player-controls">
+            <button class="play-pause-btn" id="popupPlayBtn">▶</button>
+            <div class="track-progress-wrapper">
+              <div class="track-progress-bar" id="progressBar">
+                <div class="track-progress-fill" id="progressFill"></div>
+              </div>
+              <div class="time-indicators">
+                <span id="currentTime">0:00</span>
+                <span id="durationTime">0:00</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="volume-box">
+            <span>🔊</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.01" value="0.3" />
+            <span id="volumePercent" style="font-family: 'Fira Code', monospace; min-width: 32px;">30%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="profile-avatar-wrapper">
+      <img src="profil.jpg" alt="Serkan Yazıcı" class="profile-avatar" />
+    </div>
+
+    <h1><span data-i18n="hero_greet">Merhaba, Ben</span> <span class="glitch" data-text="Serkan Yazıcı">Serkan Yazıcı</span></h1>
+    <div class="typewriter-container">
+      <span data-i18n="hero_im">Bir</span> <span class="typewriter-text" id="typewriter"></span>
+    </div>
+    <div class="hero-buttons">
+      <a href="#projeler" class="btn-main smooth-link" data-i18n="hero_btn_projects">Projelerimi Keşfet</a>
+      <a href="#iletisim" class="btn-secondary smooth-link" data-i18n="hero_btn_contact">İletişime Geç</a>
+    </div>
+  </section>
+
+  <!-- ÖZET / İSTATİSTİK BÖLÜMÜ -->
+  <section id="stats" class="stats-section">
+    <div class="section-header reveal">
+      <span class="sec-number">02</span>
+      <h2 class="sec-title" data-i18n="stats_title">Genel Özet</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="stats-grid reveal">
+      <div class="stat-card tilt-card spotlight-card">
+        <div class="stat-num" data-val="3" data-format="int">0</div>
+        <div class="stat-label" data-i18n="stat_1">Tamamlanan Proje</div>
+      </div>
+      <div class="stat-card tilt-card spotlight-card">
+        <div class="stat-num" data-val="29000" data-format="int">0</div>
+        <div class="stat-label" data-i18n="stat_2">Satır Temiz Kod</div>
+      </div>
+      <div class="stat-card tilt-card spotlight-card">
+        <div class="stat-num" data-val="740" data-format="int">0</div>
+        <div class="stat-label" data-i18n="stat_3">Fincan Kahve</div>
+      </div>
+      <div class="stat-card tilt-card spotlight-card">
+        <div class="stat-num" data-val="99.9" data-format="decimal" data-prefix="%" data-suffix="">0</div>
+        <div class="stat-label" data-i18n="stat_4">Öğrenme Tutkusu</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJELER (REPNEX, SERKAN.DEV, AEROCAST) -->
+  <section id="projeler">
+    <div class="section-header reveal">
+      <span class="sec-number">03</span>
+      <h2 class="sec-title" data-i18n="projects_title">Projeler</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="projects-grid">
+      <!-- 1. Proje: Repnex (Spor Takip) -->
+      <div class="project-card reveal tilt-card spotlight-card">
+        <div class="project-preview">
+          <div class="mockup-ui">
+            <div class="ui-top-bar"><div class="ui-dot"></div><div class="ui-dot"></div><div class="ui-dot"></div></div>
+            <div style="font-family: 'Fira Code', monospace; font-size: 0.8rem; color: #f59e0b; padding-top: 4px;">[Repnex // Fitness]</div>
+            <div class="ui-lines" style="margin-top: 8px;"><div class="ui-line" style="width: 80%; background: #f59e0b;"></div></div>
+          </div>
+        </div>
+        <div class="project-content">
+          <h3 class="project-title" data-i18n="p1_title">Repnex — Spor & Antrenman Takip</h3>
+          <p class="project-desc" data-i18n="p1_desc">Kuzenimle ortak geliştirdiğimiz; antrenman, spor süreçleri ve ilişkisel veritabanı altyapısını içeren fitness platformu.</p>
+          <div class="tech-tags">
+            <span class="tech-tag">HTML5 / CSS3</span><span class="tech-tag">JavaScript</span><span class="tech-tag">SQL Server / API</span>
+          </div>
+          <button class="project-modal-trigger" 
+            data-p-id="p1"
+            data-github="https://github.com/ReyStella">
+            <span data-i18n="view_project">Projeyi İncele</span> &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Proje: Serkan.dev Portfolyo -->
+      <div class="project-card reveal tilt-card spotlight-card">
+        <div class="project-preview">
+          <div class="mockup-ui" style="border-color: rgba(59, 130, 246, 0.4);">
+            <div class="ui-top-bar"><div class="ui-dot"></div><div class="ui-dot"></div><div class="ui-dot"></div></div>
+            <div style="font-family: 'Fira Code', monospace; font-size: 0.8rem; color: var(--accent); padding-top: 4px;">> serkan.dev --active</div>
+            <div class="ui-lines" style="margin-top: 10px;"><div class="ui-line" style="width: 70%; background: var(--accent);"></div></div>
+          </div>
+        </div>
+        <div class="project-content">
+          <h3 class="project-title" data-i18n="p2_title">Serkan.dev — İnteraktif Portfolyo</h3>
+          <p class="project-desc" data-i18n="p2_desc">Web Audio API ses motoru, interaktif terminal, parçacık simülasyonu ve GitHub REST API entegrasyonuna sahip kişisel vitrin.</p>
+          <div class="tech-tags">
+            <span class="tech-tag">Web Audio API</span><span class="tech-tag">HTML5 Canvas</span><span class="tech-tag">Glassmorphism</span>
+          </div>
+          <button class="project-modal-trigger" 
+            data-p-id="p2"
+            data-github="https://github.com/ReyStella">
+            <span data-i18n="view_project">Projeyi İncele</span> &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Proje: AeroCast Hava Durumu Paneli -->
+      <div class="project-card reveal tilt-card spotlight-card">
+        <div class="project-preview">
+          <div class="mockup-ui" style="border-color: rgba(56, 189, 248, 0.4);">
+            <div class="ui-top-bar"><div class="ui-dot"></div><div class="ui-dot"></div><div class="ui-dot"></div></div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 4px 6px 0;">
+              <span style="font-size: 1.1rem; color: #fff;">🌤️ İstanbul</span>
+              <span style="font-family: 'Outfit', sans-serif; font-size: 1.4rem; color: var(--accent); font-weight: 800;">22°C</span>
+            </div>
+            <div class="ui-lines" style="margin-top: 8px;"><div class="ui-line" style="width: 90%; background: linear-gradient(90deg, #38bdf8, #f59e0b);"></div></div>
+          </div>
+        </div>
+        <div class="project-content">
+          <h3 class="project-title" data-i18n="p3_title">AeroCast — Canlı Meteoroloji İstasyonu</h3>
+          <p class="project-desc" data-i18n="p3_desc">Hava durumuna göre dinamik değişen parçacık tuvali, dönen rüzgar pusulası, SVG sparkline grafiği ve 7 günlük tahmin sunan SaaS hava paneli.</p>
+          <div class="tech-tags">
+            <span class="tech-tag">Open-Meteo REST API</span><span class="tech-tag">SVG Sparkline</span><span class="tech-tag">LocalStorage</span>
+          </div>
+          <button class="project-modal-trigger" 
+            data-p-id="p3"
+            data-github="https://github.com/ReyStella">
+            <span data-i18n="view_project">Projeyi İncele</span> &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORTALANMIŞ, KOMPAKT, 3D SPOTLIGHT CANLI GITHUB KARTI -->
+    <div class="github-center-wrap reveal">
+      <div class="github-compact-card tilt-card spotlight-card">
+        <div class="gh-compact-header">
+          <div class="gh-user-box">
+            <img src="https://github.com/ReyStella.png" alt="GitHub Avatar" class="gh-avatar-small" />
+            <div class="gh-meta-text">
+              <h4 data-i18n="gh_live_title">Canlı GitHub Aktivitesi</h4>
+              <p>@ReyStella · Canlı API</p>
+            </div>
+          </div>
+          <div class="gh-pill-metrics">
+            <div class="gh-badge-chip">
+              <span id="ghRepoCount">-</span>
+              <small data-i18n="gh_repos">Depo</small>
+            </div>
+            <div class="gh-badge-chip">
+              <span id="ghGistsCount">-</span>
+              <small data-i18n="gh_followers">Takipçi</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="gh-compact-repos" id="ghReposContainer">
+          <p style="color: var(--text-muted); font-size: 0.85rem;" data-i18n="gh_loading">GitHub verileri getiriliyor...</p>
+        </div>
+
+        <div class="gh-footer-btn-row">
+          <a href="https://github.com/ReyStella" target="_blank" rel="noopener noreferrer" class="btn-main" style="padding: 8px 20px; font-size: 0.82rem;" data-i18n="gh_view_profile">
+            GitHub Profili &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJE ÖZET VE DETAY MODALI -->
+  <div class="modal-overlay" id="projectModalOverlay">
+    <div class="modal-box">
+      <button class="modal-close-btn" id="closeProjectModal">&times;</button>
+      <span class="modal-chip">// PROJE DETAYI</span>
+      <h3 class="modal-title" id="modalProjectTitle">Proje Adı</h3>
+
+      <div class="modal-desc-box">
+        <p id="modalProjectDesc">Proje açıklaması buraya gelecek.</p>
+      </div>
+
+      <div class="modal-links">
+        <a href="#" target="_blank" rel="noopener noreferrer" class="btn-main" id="modalGithubLink">
+          GitHub Reposunu Görüntüle 🐙
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- YOLCULUĞUM -->
+  <section id="yolculuk">
+    <div class="section-header reveal">
+      <span class="sec-number">04</span>
+      <h2 class="sec-title" data-i18n="journey_title">Yolculuğum</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date" data-i18n="edu_date">Eylül 2025 — Devam Ediyor</div>
+        <h3 class="timeline-title" data-i18n="edu_title">Bilgisayar Programcılığı</h3>
+        <div class="timeline-subtitle">Selçuk Üniversitesi</div>
+        <p class="timeline-desc" data-i18n="edu_desc">Yazılım mimarileri, modern web teknolojileri ve algoritmik problem çözme üzerine odaklanarak akademik eğitimimi sürdürüyorum.</p>
+        <div class="tech-tags" style="margin-top: 10px;">
+          <span class="tech-tag">C#</span><span class="tech-tag">SQL Server</span><span class="tech-tag">Web Geliştirme</span><span class="tech-tag">Algoritma</span>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date" data-i18n="exp_date">Eylül 2023 — Haziran 2024</div>
+        <h3 class="timeline-title" data-i18n="exp_title">Kalite Güvence & Test (Uzun Dönem Stajyer)</h3>
+        <div class="timeline-subtitle">Atmaca Holding · Sunny Elektronik</div>
+        <p class="timeline-desc" data-i18n="exp_desc">Fabrika üretim hattında giriş-çıkış kalite kontrolü ve QC test laboratuvarında panel ve donanım kusur analizi süreçlerinde aktif görev aldım.</p>
+        <div class="tech-tags" style="margin-top: 10px;">
+          <span class="tech-tag">Quality Assurance</span><span class="tech-tag">QC Laboratuvarı</span><span class="tech-tag">Donanım Test</span>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date" data-i18n="high_date">Eylül 2020 — Haziran 2024</div>
+        <h3 class="timeline-title" data-i18n="high_title">Yazılım Geliştirme & Veritabanı</h3>
+        <div class="timeline-subtitle">Bahçelievler Türk Telekom Mesleki ve Teknik Anadolu Lisesi</div>
+        <p class="timeline-desc" data-i18n="high_desc">Nesne yönelimli programlama, ilişkisel veritabanı modelleme ve frontend temellerini kavrayarak sağlam bir temel attım.</p>
+        <div class="tech-tags" style="margin-top: 10px;">
+          <span class="tech-tag">HTML5 / CSS3</span><span class="tech-tag">JavaScript</span><span class="tech-tag">C++ / C#</span><span class="tech-tag">SQL</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- İLETİŞİM (FORMSPREE DESTEKLİ) -->
+  <section id="iletisim">
+    <div class="section-header reveal" style="justify-content: center;">
+      <span class="sec-number">05</span>
+      <h2 class="sec-title" data-i18n="contact_title">İletişim</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="contact-container reveal">
+      <p class="contact-subtitle" data-i18n="contact_sub">Bir proje, staj veya işbirliği fikrin mi var? Bana yazmaktan çekinme.</p>
+      
+      <form class="contact-form" id="contactForm">
+        <div class="form-group-row">
+          <div class="form-group">
+            <label for="name" data-i18n="form_name">Adın</label>
+            <input type="text" name="name" id="name" placeholder="Adın Soyadın" required />
+          </div>
+          <div class="form-group">
+            <label for="email" data-i18n="form_email">E-posta</label>
+            <input type="email" name="email" id="email" placeholder="ornek@mail.com" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="message" data-i18n="form_msg">Mesajın</label>
+          <textarea name="message" id="message" placeholder="Merhaba Serkan..." required></textarea>
+        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span id="submitBtnText" data-i18n="form_send">Mesajı Gönder</span>
+        </button>
+      </form>
+
+      <div class="social-pills">
+        <button class="email-copy-pill" id="emailCopyBtn" title="Tıkla ve E-postayı Kopyala">
+          <span id="emailIcon">✉</span>
+          <span id="emailText">serkanyzc028@gmail.com</span>
+        </button>
+
+        <a href="https://www.instagram.com/syzc29/" target="_blank" rel="noopener noreferrer" class="social-pill">📷 Instagram</a>
+        <a href="https://github.com/ReyStella" target="_blank" rel="noopener noreferrer" class="social-pill">🐙 GitHub</a>
+        <a href="https://linkedin.com/in/serkan-yazıcı-999b36365" target="_blank" rel="noopener noreferrer" class="social-pill">💼 LinkedIn</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2026 Serkan Yazıcı · HTML, CSS & JavaScript
+  </footer>
+
+  <script>
+    const FORMSPREE_ID = "xljeakng";
+
+    // 1. DİL DESTEĞİ
+    let currentLang = 'tr';
+    const translations = {
+      tr: {
+        nav_home: "Giriş",
+        nav_stats: "Özet",
+        nav_projects: "Projeler",
+        nav_journey: "Yolculuğum",
+        nav_contact: "İletişim",
+        hero_greet: "Merhaba, Ben",
+        hero_im: "Bir",
+        hero_btn_projects: "Projelerimi Keşfet",
+        hero_btn_contact: "İletişime Geç",
+        stats_title: "Genel Özet",
+        stat_1: "Tamamlanan Proje",
+        stat_2: "Satır Temiz Kod",
+        stat_3: "Fincan Kahve",
+        stat_4: "Öğrenme Tutkusu",
+        projects_title: "Projeler",
+        view_project: "Projeyi İncele",
+        p1_title: "Repnex — Spor & Antrenman Takip",
+        p1_desc: "Kuzenimle ortak geliştirdiğimiz; antrenman, spor süreçleri ve ilişkisel veritabanı altyapısını içeren fitness platformu.",
+        p2_title: "Serkan.dev — İnteraktif Portfolyo",
+        p2_desc: "Web Audio API ses motoru, interaktif terminal, parçacık simülasyonu ve GitHub REST API entegrasyonuna sahip kişisel vitrin.",
+        p3_title: "AeroCast — Canlı Meteoroloji İstasyonu",
+        p3_desc: "Hava durumuna göre dinamik değişen parçacık tuvali, dönen rüzgar pusulası, SVG sparkline grafiği ve 7 günlük tahmin sunan SaaS hava paneli.",
+        gh_live_title: "Canlı GitHub Aktivitesi",
+        gh_repos: "Depo",
+        gh_followers: "Takipçi",
+        gh_view_profile: "GitHub Profili →",
+        gh_loading: "GitHub verileri getiriliyor...",
+        modal_btn_gh: "GitHub Reposunu Görüntüle 🐙",
+        journey_title: "Yolculuğum",
+        edu_date: "Eylül 2025 — Devam Ediyor",
+        edu_title: "Bilgisayar Programcılığı",
+        edu_desc: "Yazılım mimarileri, modern web teknolojileri ve algoritmik problem çözme üzerine odaklanarak akademik eğitimimi sürdürüyorum.",
+        exp_date: "Eylül 2023 — Haziran 2024",
+        exp_title: "Kalite Güvence & Test (Uzun Dönem Stajyer)",
+        exp_desc: "Fabrika üretim hattında giriş-çıkış kalite kontrolü ve QC test laboratuvarında panel ve donanım kusur analizi süreçlerinde aktif görev aldım.",
+        high_date: "Eylül 2020 — Haziran 2024",
+        high_title: "Yazılım Geliştirme & Veritabanı",
+        high_desc: "Nesne yönelimli programlama, ilişkisel veritabanı modelleme ve frontend temellerini kavrayarak sağlam bir temel attım.",
+        contact_title: "İletişim",
+        contact_sub: "Bir proje, staj veya işbirliği fikrin mi var? Bana yazmaktan çekinme.",
+        form_name: "Adın",
+        form_email: "E-posta",
+        form_msg: "Mesajın",
+        form_send: "Mesajı Gönder",
+        form_sending: "İletiliyor...",
+        form_success: "Mesaj İletildi! ✓",
+        form_err: "Gönderilemedi, lütfen tekrar deneyin."
+      },
+      en: {
+        nav_home: "Home",
+        nav_stats: "Overview",
+        nav_projects: "Projects",
+        nav_journey: "Journey",
+        nav_contact: "Contact",
+        hero_greet: "Hello, I am",
+        hero_im: "A passionate",
+        hero_btn_projects: "Explore Projects",
+        hero_btn_contact: "Get in Touch",
+        stats_title: "System Metrics",
+        stat_1: "Completed Projects",
+        stat_2: "Lines of Clean Code",
+        stat_3: "Cups of Coffee",
+        stat_4: "Passion to Learn",
+        projects_title: "Projects",
+        view_project: "Inspect Project",
+        p1_title: "Repnex — Fitness & Workout Tracker",
+        p1_desc: "Collaborative fitness tracking platform featuring structured workout routines, database architecture, and performance logs.",
+        p2_title: "Serkan.dev — Interactive Portfolio",
+        p2_desc: "Personal developer showcase powered by Web Audio API synthesizers, live terminal emulator, interactive canvas, and GitHub REST API.",
+        p3_title: "AeroCast — Atmospheric Weather Station",
+        p3_desc: "Next-gen meteorological dashboard featuring dynamic particle canvas, SVG sparkline telemetry, compass direction, and 7-day projections.",
+        gh_live_title: "Live GitHub Telemetry",
+        gh_repos: "Repos",
+        gh_followers: "Followers",
+        gh_view_profile: "GitHub Profile →",
+        gh_loading: "Fetching GitHub API data...",
+        modal_btn_gh: "View GitHub Repository 🐙",
+        journey_title: "Career & Education",
+        edu_date: "Sept 2025 — Present",
+        edu_title: "Computer Programming",
+        edu_desc: "Focusing on software architectures, enterprise backend logic, and scalable modern web applications.",
+        exp_date: "Sept 2023 — June 2024",
+        exp_title: "QA & Hardware Test Intern",
+        exp_desc: "Participated in production line quality control and defect root-cause analysis in QC labs.",
+        high_date: "Sept 2020 — June 2024",
+        high_title: "Software & Database Studies",
+        high_desc: "Established a solid core in OOP, relational database normalization, and frontend fundamentals.",
+        contact_title: "Get in Touch",
+        contact_sub: "Have a project inquiry, internship, or collaboration? Feel free to reach out.",
+        form_name: "Your Name",
+        form_email: "Your Email",
+        form_msg: "Message",
+        form_send: "Send Message",
+        form_sending: "Sending...",
+        form_success: "Message Delivered! ✓",
+        form_err: "Failed to send, please try again."
+      }
+    };
+
+    // PROJE ÖZET DETAYLARI
+    const projectSummaries = {
+      p1: {
+        tr: {
+          title: "Repnex — Spor & Antrenman Takip Platformu",
+          desc: "Kuzenimle birlikte geliştirdiğimiz bu platform; kullanıcıların antrenman programlarını oluşturabildiği, egzersiz geçmişini takip edebildiği ve SQL tabanlı veritabanı altyapısıyla verilerini güvenle saklayabildiği kapsamlı bir spor ve fitness takip sistemidir."
+        },
+        en: {
+          title: "Repnex — Fitness & Workout Tracking Platform",
+          desc: "A collaborative fitness platform built to help users manage workout routines, track physical progress, and persist performance metrics reliably using a robust SQL database architecture."
+        }
+      },
+      p2: {
+        tr: {
+          title: "Serkan.dev — İnteraktif Geliştirici Portfolyosu",
+          desc: "Saf Vanilla JavaScript, HTML5 ve CSS3 kullanılarak geliştirilmiş tek sayfa web uygulaması (SPA). Özel Web Audio API sentetik ses motoru, dahili hacker terminal simülatörü, donanım hızlandırmalı parçacık ağı ve Formspree e-posta altyapısını içerir."
+        },
+        en: {
+          title: "Serkan.dev — Interactive Portfolio",
+          desc: "High-performance Single Page Application (SPA) developed with pure vanilla JavaScript and CSS3. Features custom Web Audio API cyber soundscapes, interactive CLI terminal, hardware-accelerated canvas particles, and Formspree messaging."
+        }
+      },
+      p3: {
+        tr: {
+          title: "AeroCast — Canlı Meteoroloji İstasyonu",
+          desc: "Open-Meteo REST API entegrasyonuyla çalışan fütüristik hava durumu istasyonu. Canlı hava koşullarına (yağmur, kar, güneş, bulut) göre renk değiştiren arka plan, SVG tabanlı 14 saatlik sıcaklık grafiği, döner rüzgar pusulası ve LocalStorage favori hafızası sunar."
+        },
+        en: {
+          title: "AeroCast — Atmospheric Weather Station",
+          desc: "High-fidelity meteorological SaaS dashboard integrated with Open-Meteo REST API. Features an adaptive atmospheric particle canvas, SVG sparkline curve charts, interactive wind compass, and LocalStorage favorites persistence."
+        }
+      }
+    };
+
+    const langBtn = document.getElementById('langSwitchBtn');
+    langBtn.addEventListener('click', () => {
+      currentLang = currentLang === 'tr' ? 'en' : 'tr';
+      langBtn.textContent = currentLang === 'tr' ? 'EN' : 'TR';
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+          el.textContent = translations[currentLang][key];
+        }
+      });
+      playCyberSound(800, 'sine', 0.05);
+    });
+
+    // 2. CYBER TIKLAMA SES MOTORU
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playCyberSound(freq = 600, type = 'sine', duration = 0.05) {
+      try {
+        if (!audioCtx) audioCtx = new AudioContextClass();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('button, input, textarea')) {
+        playCyberSound(900, 'triangle', 0.04);
+      }
+    });
+
+    // 3. CANLI GITHUB API
+    async function fetchGitHubData() {
+      const username = 'ReyStella';
+      const container = document.getElementById('ghReposContainer');
+      const repoCountEl = document.getElementById('ghRepoCount');
+      const followersCountEl = document.getElementById('ghGistsCount');
+
+      try {
+        const userRes = await fetch(`https://api.github.com/users/${username}`);
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          repoCountEl.textContent = userData.public_repos;
+          followersCountEl.textContent = userData.followers;
+        }
+
+        const reposRes = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=2`);
+        if (reposRes.ok) {
+          const repos = await reposRes.json();
+          container.innerHTML = '';
+
+          repos.forEach(repo => {
+            const item = document.createElement('a');
+            item.href = repo.html_url;
+            item.target = '_blank';
+            item.rel = 'noopener noreferrer';
+            item.className = 'gh-mini-repo-item';
+
+            item.innerHTML = `
+              <span class="gh-repo-title">📁 ${repo.name}</span>
+              <div class="gh-repo-tags">
+                <span>★ ${repo.stargazers_count}</span>
+                <span style="color: var(--accent);">${repo.language || 'Code'}</span>
+              </div>
+            `;
+            container.appendChild(item);
+          });
+        }
+      } catch (err) {
+        container.innerHTML = `<p style="color: var(--text-muted); font-size: 0.85rem;">GitHub API verisi çevrimdışı.</p>`;
+      }
+    }
+    fetchGitHubData();
+
+    // 4. SAYFA KAYDIRMA
+    function smoothScrollTo(targetY, duration = 850) {
+      const startY = window.pageYOffset;
+      const difference = targetY - startY;
+      const startTime = performance.now();
+
+      function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+
+      function step(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = easeInOutCubic(progress);
+
+        window.scrollTo(0, startY + difference * ease);
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    document.querySelectorAll('.smooth-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const targetId = link.getAttribute('href');
+        if (targetId && targetId.startsWith('#')) {
+          e.preventDefault();
+          const targetEl = document.querySelector(targetId);
+          if (targetEl) {
+            playCyberSound(500, 'triangle', 0.07);
+            const navHeight = 76;
+            const targetPos = targetEl.getBoundingClientRect().top + window.pageYOffset - navHeight;
+            smoothScrollTo(targetPos, 900);
+          }
+        }
+      });
+    });
+
+    // 5. MINI ARKA PLAN CYBER MP3 PLAYER
+    const bgMusic = document.getElementById('bgMusic');
+    const ambientToggle = document.getElementById('ambientToggle');
+    const ambientBtnText = document.getElementById('ambientBtnText');
+    const miniPlayerPopup = document.getElementById('miniPlayerPopup');
+    const popupPlayBtn = document.getElementById('popupPlayBtn');
+    const trackStatusText = document.getElementById('trackStatusText');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumePercent = document.getElementById('volumePercent');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const currentTimeEl = document.getElementById('currentTime');
+    const durationTimeEl = document.getElementById('durationTime');
+
+    if (bgMusic) bgMusic.volume = 0.3;
+
+    ambientToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      miniPlayerPopup.classList.toggle('open');
+      playCyberSound(700, 'sine', 0.05);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.ambient-player-wrapper')) {
+        miniPlayerPopup.classList.remove('open');
+      }
+    });
+
+    function togglePlay() {
+      if (!bgMusic) return;
+
+      if (bgMusic.paused) {
+        const playPromise = bgMusic.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            popupPlayBtn.textContent = '⏸';
+            ambientToggle.classList.add('active');
+            ambientBtnText.textContent = currentLang === 'tr' ? 'Çalıyor' : 'Playing';
+            trackStatusText.textContent = 'ON AIR // 320kbps';
+          }).catch(() => {
+            alert("Müziğin çalabilmesi için klasörde 'muzik.mp3' dosyasının bulunduğundan emin olun.");
+          });
+        }
+      } else {
+        bgMusic.pause();
+        popupPlayBtn.textContent = '▶';
+        ambientToggle.classList.remove('active');
+        ambientBtnText.textContent = currentLang === 'tr' ? 'Ambiyans' : 'Ambient';
+        trackStatusText.textContent = 'PAUSED';
+      }
+    }
+    popupPlayBtn.addEventListener('click', togglePlay);
+
+    volumeSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      if (bgMusic) bgMusic.volume = val;
+      volumePercent.textContent = `${Math.round(val * 100)}%`;
+    });
+
+    function formatTime(sec) {
+      if (isNaN(sec)) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    if (bgMusic) {
+      bgMusic.addEventListener('loadedmetadata', () => {
+        durationTimeEl.textContent = formatTime(bgMusic.duration);
+      });
+
+      bgMusic.addEventListener('timeupdate', () => {
+        currentTimeEl.textContent = formatTime(bgMusic.currentTime);
+        if (bgMusic.duration) {
+          const pct = (bgMusic.currentTime / bgMusic.duration) * 100;
+          progressFill.style.width = `${pct}%`;
+        }
+      });
+    }
+
+    progressBar.addEventListener('click', (e) => {
+      if (!bgMusic || !bgMusic.duration) return;
+      const rect = progressBar.getBoundingClientRect();
+      const clickPos = (e.clientX - rect.left) / rect.width;
+      bgMusic.currentTime = clickPos * bgMusic.duration;
+    });
+
+    // 6. DAKTİLO EFEKTİ
+    const words = ["Bilgisayar Programcısıyım.", "Frontend Geliştiriciyim.", "Yazılım Tutkunuyum."];
+    let wIdx = 0, letterIdx = 0, isDeleting = false;
+    const typeEl = document.getElementById("typewriter");
+
+    function typeLoop() {
+      const currentWord = words[wIdx];
+      if (isDeleting) {
+        typeEl.textContent = currentWord.substring(0, letterIdx - 1);
+        letterIdx--;
+      } else {
+        typeEl.textContent = currentWord.substring(0, letterIdx + 1);
+        letterIdx++;
+      }
+
+      let speed = isDeleting ? 40 : 90;
+      if (!isDeleting && letterIdx === currentWord.length) {
+        speed = 1800;
+        isDeleting = true;
+      } else if (isDeleting && letterIdx === 0) {
+        isDeleting = false;
+        wIdx = (wIdx + 1) % words.length;
+        speed = 400;
+      }
+      setTimeout(typeLoop, speed);
+    }
+    typeLoop();
+
+    // 7. FARE İMLECİ & SPOTLIGHT
+    const dot = document.getElementById('cursorDot');
+    const circle = document.getElementById('cursorCircle');
+    let mX = -100, mY = -100, cX = -100, cY = -100;
+
+    window.addEventListener('mousemove', e => {
+      mX = e.clientX;
+      mY = e.clientY;
+      dot.style.transform = `translate(${mX}px, ${mY}px)`;
+
+      document.querySelectorAll('.spotlight-card').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+
+    function animCursor() {
+      cX += (mX - cX) * 0.15;
+      cY += (mY - cY) * 0.15;
+      circle.style.transform = `translate(${cX}px, ${cY}px)`;
+      requestAnimationFrame(animCursor);
+    }
+    animCursor();
+
+    // 8. PARÇACIK AĞI
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let parts = [];
+
+    function setSize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', setSize);
+    setSize();
+
+    for (let i = 0; i < 45; i++) {
+      parts.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.7,
+        vy: (Math.random() - 0.5) * 0.7
+      });
+    }
+
+    function animParts() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const computedAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+
+      for (let i = 0; i < parts.length; i++) {
+        let p = parts[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        ctx.fillStyle = computedAccent || 'rgba(45, 212, 191, 0.4)';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        for (let j = i + 1; j < parts.length; j++) {
+          let p2 = parts[j];
+          let d = Math.hypot(p.x - p2.x, p.y - p2.y);
+          if (d < 110) {
+            ctx.strokeStyle = computedAccent || `rgba(45, 212, 191, ${0.18 - d / 600})`;
+            ctx.globalAlpha = 0.25 - d / 600;
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
+          }
+        }
+      }
+      requestAnimationFrame(animParts);
+    }
+    animParts();
+
+    // 9. SAYI SAYACI
+    let counted = false;
+    function runCounters() {
+      const statsSec = document.getElementById('stats');
+      if (!statsSec || counted) return;
+      if (statsSec.getBoundingClientRect().top < window.innerHeight * 0.92) {
+        counted = true;
+        document.querySelectorAll('.stat-num').forEach(num => {
+          const target = parseFloat(num.getAttribute('data-val'));
+          const format = num.getAttribute('data-format');
+          const prefix = num.getAttribute('data-prefix') || '';
+          let cur = 0;
+
+          if (format === 'decimal') {
+            const inc = target / 40;
+            const timer = setInterval(() => {
+              cur += inc;
+              if (cur >= target) {
+                num.textContent = prefix + target.toString().replace('.', ',');
+                clearInterval(timer);
+              } else {
+                num.textContent = prefix + cur.toFixed(1).replace('.', ',');
+              }
+            }, 30);
+          } else {
+            const inc = Math.max(1, Math.ceil(target / 40));
+            const timer = setInterval(() => {
+              cur += inc;
+              if (cur >= target) {
+                num.textContent = prefix + target.toLocaleString('tr-TR');
+                clearInterval(timer);
+              } else {
+                num.textContent = prefix + cur.toLocaleString('tr-TR');
+              }
+            }, 30);
+          }
+        });
+      }
+    }
+
+    // 10. SCROLL REVEAL
+    const revs = document.querySelectorAll('.reveal');
+    function checkRevs() {
+      revs.forEach(r => {
+        if (r.getBoundingClientRect().top < window.innerHeight * 0.92) {
+          r.classList.add('active');
+        }
+      });
+      runCounters();
+    }
+    window.addEventListener('scroll', checkRevs);
+    checkRevs();
+
+    // 11. 3D KART EĞİMİ
+    document.querySelectorAll('.tilt-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width - 0.5) * 16;
+        const y = ((e.clientY - r.top) / r.height - 0.5) * -16;
+        card.style.transform = `perspective(800px) rotateX(${y}deg) rotateY(${x}deg) translateY(-6px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0)`;
+      });
+    });
+
+    // 12. PROJE MODAL İŞLEYİCİSİ
+    const modalOverlay = document.getElementById('projectModalOverlay');
+    const modalProjectTitle = document.getElementById('modalProjectTitle');
+    const modalProjectDesc = document.getElementById('modalProjectDesc');
+    const modalGithubLink = document.getElementById('modalGithubLink');
+    const closeProjectModal = document.getElementById('closeProjectModal');
+
+    document.querySelectorAll('.project-modal-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+
+        const parentCard = btn.closest('.project-card');
+        if (parentCard) {
+          parentCard.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0)';
+        }
+
+        const pId = btn.getAttribute('data-p-id');
+        const data = projectSummaries[pId][currentLang];
+
+        modalProjectTitle.textContent = data.title;
+        modalProjectDesc.textContent = data.desc;
+        modalGithubLink.href = btn.getAttribute('data-github');
+        modalGithubLink.textContent = translations[currentLang].modal_btn_gh;
+
+        modalOverlay.classList.add('open');
+        playCyberSound(1000, 'sine', 0.05);
+      });
+    });
+
+    closeProjectModal.addEventListener('click', () => {
+      modalOverlay.classList.remove('open');
+      playCyberSound(400, 'sine', 0.05);
+    });
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.classList.remove('open');
+      }
+    });
+
+    // 13. MİNİ HACKER TERMİNALİ
+    const termToggle = document.getElementById('terminalToggle');
+    const termModal = document.getElementById('terminalModal');
+    const closeTerm = document.getElementById('closeTerminal');
+    const termInput = document.getElementById('termInput');
+    const termOutput = document.getElementById('termOutput');
+
+    let secretNumber = null;
+    let gameAttempts = 0;
+
+    function toggleTerminal() {
+      termModal.classList.toggle('open');
+      playCyberSound(450, 'sine', 0.08);
+      if (termModal.classList.contains('open')) {
+        setTimeout(() => termInput.focus(), 150);
+      }
+    }
+    termToggle.addEventListener('click', toggleTerminal);
+    closeTerm.addEventListener('click', toggleTerminal);
+
+    window.addEventListener('keydown', e => {
+      if (e.key === '~' || e.key === '`') {
+        e.preventDefault();
+        toggleTerminal();
+      }
+    });
+
+    function changeSiteTheme(color) {
+      const root = document.documentElement;
+      if (color === 'purple') {
+        root.style.setProperty('--accent', '#a855f7');
+        root.style.setProperty('--accent-glow', 'rgba(168, 85, 247, 0.45)');
+        return "Tema <span style='color:#a855f7; font-weight:bold;'>Neon Mor</span> olarak güncellendi!";
+      } else if (color === 'green') {
+        root.style.setProperty('--accent', '#22c55e');
+        root.style.setProperty('--accent-glow', 'rgba(34, 197, 94, 0.45)');
+        return "Tema <span style='color:#22c55e; font-weight:bold;'>Matrix Yeşili</span> olarak güncellendi!";
+      } else if (color === 'red') {
+        root.style.setProperty('--accent', '#ef4444');
+        root.style.setProperty('--accent-glow', 'rgba(239, 68, 68, 0.45)');
+        return "Tema <span style='color:#ef4444; font-weight:bold;'>Siber Kırmızı</span> olarak güncellendi!";
+      } else if (color === 'cyan') {
+        root.style.setProperty('--accent', '#2dd4bf');
+        root.style.setProperty('--accent-glow', 'rgba(45, 212, 191, 0.45)');
+        return "Tema <span style='color:#2dd4bf; font-weight:bold;'>Neon Turkuaz</span> olarak güncellendi!";
+      } else {
+        return "Kullanım: <span class='term-hl'>theme cyan | purple | green | red</span>";
+      }
+    }
+
+    if (termInput) {
+      termInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          playCyberSound(1100, 'square', 0.05);
+          const raw = termInput.value.trim();
+          const parts = raw.toLowerCase().split(' ');
+          const cmd = parts[0];
+          const arg = parts[1];
+          termInput.value = '';
+          let response = '';
+
+          if (cmd === 'help') {
+            response = "Komutlar: <span class='term-hl'>theme [renk]</span>, <span class='term-hl'>game</span>, <span class='term-hl'>about</span>, <span class='term-hl'>skills</span>, <span class='term-hl'>education</span>, <span class='term-hl'>contact</span>, <span class='term-hl'>clear</span>";
+          } else if (cmd === 'theme') {
+            response = arg ? changeSiteTheme(arg) : "Kullanılabilir: <span class='term-hl'>theme cyan | purple | green | red</span>";
+          } else if (cmd === 'game') {
+            secretNumber = Math.floor(Math.random() * 50) + 1;
+            gameAttempts = 0;
+            response = "🎮 <span class='term-hl'>Sayı Tahmin Oyunu (1-50)!</span> Tahmin: <span class='term-hl'>guess [sayı]</span>";
+          } else if (cmd === 'guess') {
+            if (secretNumber === null) {
+              response = "Önce <span class='term-hl'>game</span> yazın.";
+            } else {
+              const num = parseInt(arg);
+              if (isNaN(num)) {
+                response = "Örnek: <span class='term-hl'>guess 25</span>";
+              } else {
+                gameAttempts++;
+                if (num === secretNumber) {
+                  response = `🎉 <span style='color:#22c55e;'>Tebrikler! ${gameAttempts}. denemede bildiniz!</span>`;
+                  secretNumber = null;
+                } else {
+                  response = num < secretNumber ? `▲ Daha BÜYÜK bir sayı girin.` : `▼ Daha KÜÇÜK bir sayı girin.`;
+                }
+              }
+            }
+          } else if (cmd === 'about') {
+            response = "Serkan Yazıcı — Bilgisayar Programcılığı Öğrencisi & Geliştirici.";
+          } else if (cmd === 'skills') {
+            response = "C#, .NET, SQL Server, HTML5, CSS3, JavaScript, REST API.";
+          } else if (cmd === 'education') {
+            response = "Selçuk Üniversitesi - Bilgisayar Programcılığı (2025 - Devam Ediyor)";
+          } else if (cmd === 'contact') {
+            response = "E-posta: serkanyzc028@gmail.com | Instagram: @syzc29";
+          } else if (cmd === 'clear') {
+            termOutput.innerHTML = '';
+            return;
+          } else if (cmd === '') {
+            return;
+          } else {
+            response = `Bilinmeyen komut: '${raw}'. Komutlar için <span class='term-hl'>help</span> yazın.`;
+          }
+
+          termOutput.innerHTML += `<p>> ${raw}</p><p>${response}</p>`;
+          termOutput.scrollTop = termOutput.scrollHeight;
+        } else if (e.key === 'Backspace') {
+          playCyberSound(320, 'sine', 0.025);
+        } else if (e.key.length === 1) {
+          const randomFreq = Math.floor(Math.random() * 200) + 650;
+          playCyberSound(randomFreq, 'triangle', 0.025);
+        }
+      });
+    }
+
+    // 14. E-POSTA KOPYALAYICI
+    const emailCopyBtn = document.getElementById('emailCopyBtn');
+    const emailText = document.getElementById('emailText');
+    const emailIcon = document.getElementById('emailIcon');
+
+    if (emailCopyBtn) {
+      emailCopyBtn.addEventListener('click', () => {
+        const mailAddress = "serkanyzc028@gmail.com";
+        navigator.clipboard.writeText(mailAddress).then(() => {
+          playCyberSound(1200, 'sine', 0.1);
+          emailCopyBtn.classList.add('copied');
+          emailIcon.textContent = '✓';
+          emailText.textContent = currentLang === 'tr' ? 'Kopyalandı!' : 'Copied!';
+
+          setTimeout(() => {
+            emailCopyBtn.classList.remove('copied');
+            emailIcon.textContent = '✉';
+            emailText.textContent = mailAddress;
+          }, 2500);
+        });
+      });
+    }
+
+    // 15. FORMSPREE GÖNDERİMİ
+    const contactForm = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitBtnText = document.getElementById('submitBtnText');
+
+    if (contactForm) {
+      contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        submitBtn.disabled = true;
+        submitBtnText.textContent = translations[currentLang].form_sending;
+
+        const formData = new FormData(contactForm);
+
+        try {
+          const response = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Accept': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            playCyberSound(1200, 'sine', 0.15);
+            submitBtnText.textContent = translations[currentLang].form_success;
+            submitBtn.style.background = '#22c55e';
+            contactForm.reset();
+
+            setTimeout(() => {
+              submitBtn.disabled = false;
+              submitBtn.style.background = '';
+              submitBtnText.textContent = translations[currentLang].form_send;
+            }, 4000);
+          } else {
+            throw new Error();
+          }
+        } catch (error) {
+          playCyberSound(300, 'sawtooth', 0.2);
+          alert(translations[currentLang].form_err);
+          submitBtn.disabled = false;
+          submitBtnText.textContent = translations[currentLang].form_send;
+        }
+      });
+    }
+  </script>
+</body>
+</html>

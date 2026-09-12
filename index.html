@@ -466,6 +466,7 @@
     }
 
     /* 1. İSİM GLITCH EFEKTİ */
+   /* OTOMATİK DÖNGÜSEL GLITCH EFEKTİ */
     .glitch {
       position: relative;
       display: inline-block;
@@ -481,32 +482,78 @@
       height: 100%;
       clip: rect(0, 0, 0, 0);
     }
-    .glitch:hover::before {
+    .glitch::before {
       left: -2px;
       text-shadow: 2px 0 var(--accent);
-      animation: glitchAnim1 0.75s infinite linear alternate-reverse;
+      animation: autoGlitch1 4s infinite linear;
     }
-    .glitch:hover::after {
+    .glitch::after {
       left: 2px;
       text-shadow: -2px 0 #38bdf8;
-      animation: glitchAnim2 0.75s infinite linear alternate-reverse;
+      animation: autoGlitch2 4s infinite linear;
     }
 
-    @keyframes glitchAnim1 {
-      0% { clip: rect(12px, 9999px, 44px, 0); }
-      25% { clip: rect(32px, 9999px, 12px, 0); }
-      50% { clip: rect(8px, 9999px, 28px, 0); }
-      75% { clip: rect(42px, 9999px, 50px, 0); }
-      100% { clip: rect(18px, 9999px, 36px, 0); }
-    }
-    @keyframes glitchAnim2 {
-      0% { clip: rect(25px, 9999px, 15px, 0); }
-      25% { clip: rect(4px, 9999px, 40px, 0); }
-      50% { clip: rect(38px, 9999px, 20px, 0); }
-      75% { clip: rect(10px, 9999px, 30px, 0); }
-      100% { clip: rect(48px, 9999px, 10px, 0); }
+    @keyframes autoGlitch1 {
+      0%, 80%, 100% {
+        clip: rect(0, 0, 0, 0);
+        opacity: 0;
+      }
+      82% {
+        clip: rect(14px, 9999px, 38px, 0);
+        opacity: 1;
+        transform: skew(0.4deg);
+      }
+      85% {
+        clip: rect(36px, 9999px, 12px, 0);
+        opacity: 1;
+        transform: skew(-0.5deg);
+      }
+      88% {
+        clip: rect(8px, 9999px, 48px, 0);
+        opacity: 1;
+        transform: skew(0.3deg);
+      }
+      92% {
+        clip: rect(28px, 9999px, 20px, 0);
+        opacity: 1;
+        transform: skew(-0.2deg);
+      }
+      95% {
+        clip: rect(0, 0, 0, 0);
+        opacity: 0;
+      }
     }
 
+    @keyframes autoGlitch2 {
+      0%, 80%, 100% {
+        clip: rect(0, 0, 0, 0);
+        opacity: 0;
+      }
+      83% {
+        clip: rect(26px, 9999px, 16px, 0);
+        opacity: 1;
+        transform: skew(-0.4deg);
+      }
+      86% {
+        clip: rect(6px, 9999px, 44px, 0);
+        opacity: 1;
+        transform: skew(0.5deg);
+      }
+      89% {
+        clip: rect(42px, 9999px, 24px, 0);
+        opacity: 1;
+        transform: skew(-0.3deg);
+      }
+      93% {
+        clip: rect(12px, 9999px, 32px, 0);
+        opacity: 1;
+        transform: skew(0.2deg);
+      }
+      96% {
+        clip: rect(0, 0, 0, 0);
+        opacity: 0;
+      }
+    }
     /* 2. LOGO HOVER VE BALONCUK CANLANDIRMASI */
     .brand-logo:hover .logo-core {
       transform: scale(1.08) rotate(-4deg);
@@ -526,7 +573,7 @@
     .brand-logo:hover .b3 {
       animation: bubbleExplode3 1.2s infinite cubic-bezier(0.25, 0.8, 0.25, 1) 0.2s;
     }
-    
+
   </style>
 </head>
 <body>

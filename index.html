@@ -108,6 +108,7 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 0 12px var(--accent-glow);
+      transition: all 0.3s ease;
     }
     .logo-core span {
       font-family: 'Outfit', sans-serif;
@@ -166,6 +167,16 @@
       95% { transform: translate(2px, -30px) scale(1.2); opacity: 0.6; }
       100% { transform: translate(4px, -44px) scale(0); opacity: 0; }
     }
+
+    .brand-logo:hover .logo-core {
+      transform: scale(1.08) rotate(-4deg);
+      border-color: #38bdf8;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .brand-logo:hover .bubble { opacity: 1; }
+    .brand-logo:hover .b1 { animation: bubbleExplode1 1.2s infinite cubic-bezier(0.25, 0.8, 0.25, 1); }
+    .brand-logo:hover .b2 { animation: bubbleExplode2 1.2s infinite cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s; }
+    .brand-logo:hover .b3 { animation: bubbleExplode3 1.2s infinite cubic-bezier(0.25, 0.8, 0.25, 1) 0.2s; }
 
     .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
     .brand-title {
@@ -332,6 +343,51 @@
     .btn-main { background: linear-gradient(90deg, var(--accent) 0%, #38bdf8 100%); color: #04121e; border: none; box-shadow: 0 4px 15px var(--accent-glow); }
     .btn-secondary { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.15); }
 
+    /* SÜREKLİ AKICI & HOLOGRAFİK GLITCH EFEKTİ */
+    .glitch {
+      position: relative;
+      display: inline-block;
+      color: #fff;
+    }
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-dark);
+    }
+    .glitch::before {
+      left: -2px;
+      text-shadow: 2px 0 var(--accent);
+      animation: continuousGlitch1 2.5s infinite linear alternate-reverse;
+    }
+    .glitch::after {
+      left: 2px;
+      text-shadow: -2px 0 #38bdf8;
+      animation: continuousGlitch2 2s infinite linear alternate-reverse;
+    }
+    @keyframes continuousGlitch1 {
+      0% { clip: rect(15px, 9999px, 28px, 0); transform: skew(0.3deg); }
+      15% { clip: rect(42px, 9999px, 58px, 0); transform: skew(-0.4deg); }
+      30% { clip: rect(5px, 9999px, 22px, 0); transform: skew(0.2deg); }
+      45% { clip: rect(60px, 9999px, 75px, 0); transform: skew(-0.5deg); }
+      60% { clip: rect(25px, 9999px, 40px, 0); transform: skew(0.4deg); }
+      75% { clip: rect(80px, 9999px, 95px, 0); transform: skew(-0.2deg); }
+      90% { clip: rect(35px, 9999px, 50px, 0); transform: skew(0.5deg); }
+      100% { clip: rect(10px, 9999px, 30px, 0); transform: skew(0deg); }
+    }
+    @keyframes continuousGlitch2 {
+      0% { clip: rect(50px, 9999px, 68px, 0); transform: skew(-0.3deg); }
+      20% { clip: rect(10px, 9999px, 24px, 0); transform: skew(0.4deg); }
+      40% { clip: rect(70px, 9999px, 86px, 0); transform: skew(-0.2deg); }
+      60% { clip: rect(30px, 9999px, 48px, 0); transform: skew(0.5deg); }
+      80% { clip: rect(2px, 9999px, 18px, 0); transform: skew(-0.4deg); }
+      100% { clip: rect(45px, 9999px, 62px, 0); transform: skew(0.2deg); }
+    }
+
     /* SPOTLIGHT & TILT KARTLAR */
     .spotlight-card {
       position: relative;
@@ -368,9 +424,21 @@
     .stat-num { font-family: 'Outfit', sans-serif; font-size: 2.4rem; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
     .stat-label { font-size: 0.88rem; color: var(--text-muted); font-weight: 600; }
 
-    /* PROJELER */
-    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-    .project-card { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; backdrop-filter: blur(12px); }
+    /* PROJELER IZGARASI */
+    .projects-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+      gap: 24px; 
+    }
+    .project-card { 
+      background: var(--card-bg); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      border-radius: 16px; 
+      overflow: hidden; 
+      display: flex; 
+      flex-direction: column; 
+      backdrop-filter: blur(12px); 
+    }
     .project-preview { width: 100%; height: 160px; background: #091322; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
     .mockup-ui { width: 85%; height: 80%; background: #0d1b2a; border-radius: 8px; border: 1px solid rgba(45, 212, 191, 0.2); padding: 8px; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.3s ease; }
     .project-card:hover .mockup-ui { transform: scale(1.04) translateY(-2px); }
@@ -386,9 +454,22 @@
     .project-modal-trigger { background: none; border: none; color: var(--accent); font-family: inherit; font-weight: 600; font-size: 0.86rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 0; text-align: left; transition: gap 0.2s ease; }
     .project-modal-trigger:hover { gap: 10px; }
 
-    /* GİTHUB KARTI */
-    .github-center-wrap { display: flex; justify-content: center; margin-top: 35px; width: 100%; }
-    .github-compact-card { width: 100%; max-width: 650px; background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 20px; backdrop-filter: blur(14px); }
+    /* AYRI VE ORTALANMIŞ GİTHUB KARTI */
+    .github-center-wrap { 
+      display: flex; 
+      justify-content: center; 
+      margin-top: 40px; 
+      width: 100%; 
+    }
+    .github-compact-card { 
+      width: 100%; 
+      max-width: 650px; 
+      background: var(--card-bg); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      border-radius: 18px; 
+      padding: 20px; 
+      backdrop-filter: blur(14px); 
+    }
     .gh-compact-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
     .gh-user-box { display: flex; align-items: center; gap: 12px; }
     .gh-avatar-small { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); }
@@ -464,82 +545,6 @@
       section { padding: 50px 5% 45px; }
       .hero { padding-top: 90px; }
     }
-
-    /* 1. İSİM GLITCH EFEKTİ */
-   /* OTOMATİK DÖNGÜSEL GLITCH EFEKTİ */
-/* OTOMATİK DÖNGÜSEL GLITCH EFEKTİ */
-/* DAHA SIK VE KESKİN DÖNGÜSEL GLITCH */
-/* SÜREKLİ AKICI & HOLOGRAFİK GLITCH EFEKTİ */
-    .glitch {
-      position: relative;
-      display: inline-block;
-      color: #fff;
-    }
-
-    .glitch::before,
-    .glitch::after {
-      content: attr(data-text);
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--bg-dark);
-    }
-
-    /* Turkuaz katman - sürekli dikey ve yatay tarama */
-    .glitch::before {
-      left: -2px;
-      text-shadow: 2px 0 var(--accent);
-      animation: continuousGlitch1 2.5s infinite linear alternate-reverse;
-    }
-
-    /* Neon Mavi katman - ters ritimli siber kayma */
-    .glitch::after {
-      left: 2px;
-      text-shadow: -2px 0 #38bdf8;
-      animation: continuousGlitch2 2s infinite linear alternate-reverse;
-    }
-
-    @keyframes continuousGlitch1 {
-      0% { clip: rect(15px, 9999px, 28px, 0); transform: skew(0.3deg); }
-      15% { clip: rect(42px, 9999px, 58px, 0); transform: skew(-0.4deg); }
-      30% { clip: rect(5px, 9999px, 22px, 0); transform: skew(0.2deg); }
-      45% { clip: rect(60px, 9999px, 75px, 0); transform: skew(-0.5deg); }
-      60% { clip: rect(25px, 9999px, 40px, 0); transform: skew(0.4deg); }
-      75% { clip: rect(80px, 9999px, 95px, 0); transform: skew(-0.2deg); }
-      90% { clip: rect(35px, 9999px, 50px, 0); transform: skew(0.5deg); }
-      100% { clip: rect(10px, 9999px, 30px, 0); transform: skew(0deg); }
-    }
-
-    @keyframes continuousGlitch2 {
-      0% { clip: rect(50px, 9999px, 68px, 0); transform: skew(-0.3deg); }
-      20% { clip: rect(10px, 9999px, 24px, 0); transform: skew(0.4deg); }
-      40% { clip: rect(70px, 9999px, 86px, 0); transform: skew(-0.2deg); }
-      60% { clip: rect(30px, 9999px, 48px, 0); transform: skew(0.5deg); }
-      80% { clip: rect(2px, 9999px, 18px, 0); transform: skew(-0.4deg); }
-      100% { clip: rect(45px, 9999px, 62px, 0); transform: skew(0.2deg); }
-    }
-    /* 2. LOGO HOVER VE BALONCUK CANLANDIRMASI */
-    .brand-logo:hover .logo-core {
-      transform: scale(1.08) rotate(-4deg);
-      border-color: #38bdf8;
-      box-shadow: 0 0 20px var(--accent-glow);
-      transition: all 0.3s ease;
-    }
-    .brand-logo:hover .bubble {
-      opacity: 1;
-    }
-    .brand-logo:hover .b1 {
-      animation: bubbleExplode1 1.2s infinite cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    .brand-logo:hover .b2 {
-      animation: bubbleExplode2 1.2s infinite cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s;
-    }
-    .brand-logo:hover .b3 {
-      animation: bubbleExplode3 1.2s infinite cubic-bezier(0.25, 0.8, 0.25, 1) 0.2s;
-    }
-
   </style>
 </head>
 <body>
@@ -662,7 +667,7 @@
 
     <div class="stats-grid reveal">
       <div class="stat-card spotlight-card tilt-card">
-        <div class="stat-num" data-val="3" data-format="int">0</div>
+        <div class="stat-num" data-val="4" data-format="int">0</div>
         <div class="stat-label" data-i18n="stat_1">Tamamlanan Proje</div>
       </div>
       <div class="stat-card spotlight-card tilt-card">
@@ -731,23 +736,23 @@
         </div>
       </div>
 
-      <!-- 3. Proje: AeroCast -->
+      <!-- 3. Proje: AeroCast 3D -->
       <div class="project-card reveal spotlight-card tilt-card">
         <div class="project-preview">
           <div class="mockup-ui" style="border-color: rgba(56, 189, 248, 0.4);">
             <div class="ui-top-bar"><div class="ui-dot"></div><div class="ui-dot"></div><div class="ui-dot"></div></div>
-            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 2px 4px 0;">
-              <span style="font-size: 0.95rem; color: #fff;">🌤️ İstanbul</span>
-              <span style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: var(--accent); font-weight: 800;">22°C</span>
-            </div>
-            <div class="ui-lines" style="margin-top: 6px;"><div class="ui-line" style="width: 90%; background: linear-gradient(90deg, #38bdf8, #f59e0b);"></div></div>
+            <div style="font-family: 'Fira Code', monospace; font-size: 0.75rem; color: #38bdf8; padding-top: 2px;">[AeroCast // 3D Globe]</div>
+            <div class="ui-lines" style="margin-top: 6px;"><div class="ui-line" style="width: 75%; background: #38bdf8;"></div></div>
           </div>
         </div>
         <div class="project-content">
-          <h3 class="project-title" data-i18n="p3_title">AeroCast — Canlı Meteoroloji İstasyonu</h3>
-          <p class="project-desc" data-i18n="p3_desc">Hava durumuna göre dinamik değişen parçacık tuvali, dönen rüzgar pusulası, SVG sparkline grafiği ve 7 günlük tahmin sunan SaaS hava paneli.</p>
+          <h3 class="project-title" data-i18n="p3_title">AeroCast — 3D Gezegensel Meteoroloji İstasyonu</h3>
+          <p class="project-desc" data-i18n="p3_desc">İnteraktif 3D dünya küresi, gece ışıkları simülasyonu, anlık güneş/boylam telemetrisi ve 7 günlük derin atmosferik veri paneli.</p>
           <div class="tech-tags">
-            <span class="tech-tag">Open-Meteo API</span><span class="tech-tag">SVG Sparkline</span><span class="tech-tag">LocalStorage</span>
+            <span class="tech-tag">WebGL / 3D Globe</span>
+            <span class="tech-tag">Open-Meteo API</span>
+            <span class="tech-tag">Live Telemetry</span>
+            <span class="tech-tag">Glassmorphism</span>
           </div>
           <button class="project-modal-trigger" data-p-id="p3" data-github="https://github.com/ReyStella/aerocast" data-demo="https://reystella.github.io/aerocast/">
             <span data-i18n="view_project">Projeyi İncele</span> &rarr;
@@ -932,8 +937,8 @@
         p1_desc: "Kuzenimle ortak geliştirdiğimiz; antrenman, spor süreçleri ve ilişkisel veritabanı altyapısını içeren fitness platformu.",
         p2_title: "Serkan.dev — İnteraktif Portfolyo",
         p2_desc: "Web Audio API ses motoru, interaktif terminal, parçacık simülasyonu ve GitHub REST API entegrasyonuna sahip kişisel vitrin.",
-        p3_title: "AeroCast — Canlı Meteoroloji İstasyonu",
-        p3_desc: "Hava durumuna göre dinamik değişen parçacık tuvali, dönen rüzgar pusulası, SVG sparkline grafiği ve 7 günlük tahmin sunan SaaS hava paneli.",
+        p3_title: "AeroCast — 3D Gezegensel Meteoroloji İstasyonu",
+        p3_desc: "İnteraktif 3D dünya küresi, gece ışıkları simülasyonu, anlık güneş/boylam telemetrisi ve 7 günlük derin atmosferik veri paneli.",
         gh_live_title: "Canlı GitHub Aktivitesi",
         gh_repos: "Depo",
         gh_followers: "Takipçi",
@@ -981,8 +986,8 @@
         p1_desc: "Collaborative fitness tracking platform featuring structured workout routines, database architecture, and performance logs.",
         p2_title: "Serkan.dev — Interactive Portfolio",
         p2_desc: "Personal developer showcase powered by Web Audio API synthesizers, live terminal emulator, interactive canvas, and GitHub REST API.",
-        p3_title: "AeroCast — Atmospheric Weather Station",
-        p3_desc: "Next-gen meteorological dashboard featuring dynamic particle canvas, SVG sparkline telemetry, compass direction, and 7-day projections.",
+        p3_title: "AeroCast — 3D Planetary Weather Station",
+        p3_desc: "Interactive 3D planetary globe with live night-light telemetry, solar longitude coordinates, and deep atmospheric telemetry panels.",
         gh_live_title: "Live GitHub Telemetry",
         gh_repos: "Repos",
         gh_followers: "Followers",
@@ -1021,8 +1026,14 @@
         en: { title: "Serkan.dev — Interactive Portfolio", desc: "High-performance Single Page Application (SPA) developed with pure vanilla JavaScript and CSS3. Features custom Web Audio API cyber soundscapes, interactive CLI terminal, and canvas particles." }
       },
       p3: {
-        tr: { title: "AeroCast — Canlı Meteoroloji İstasyonu", desc: "Open-Meteo REST API entegrasyonuyla çalışan fütüristik hava durumu istasyonu. Canlı hava koşullarına göre renk değiştiren arka plan, SVG tabanlı sıcaklık grafiği, döner rüzgar pusulası ve LocalStorage favori hafızası sunar." },
-        en: { title: "AeroCast — Atmospheric Weather Station", desc: "High-fidelity meteorological SaaS dashboard integrated with Open-Meteo REST API. Features an adaptive atmospheric particle canvas, SVG sparkline curve charts, and interactive wind compass." }
+        tr: { 
+          title: "AeroCast — 3D Gezegensel Meteoroloji & Telemetri İstasyonu", 
+          desc: "WebGL ve Three.js altyapısıyla geliştirilen interaktif 3D dünya küresi; gerçek zamanlı gece şehir ışıkları, canlı güneş açısı ve boylam hesaplaması, 7 günlük atmosferik tahmin, rüzgar yönü/hızı, UV indeksi ve deniz kıyı durumunu anlık haritalandıran yeni nesil meteoroloji istasyonudur." 
+        },
+        en: { 
+          title: "AeroCast — 3D Planetary Weather & Telemetry Station", 
+          desc: "Next-gen atmospheric station built on WebGL & interactive 3D globe mechanics. Features real-time night-light telemetry, live solar longitude coordinates, 7-day meteorological forecasts, wind velocity vectors, UV indexes, and maritime conditions." 
+        }
       }
     };
 
@@ -1345,7 +1356,7 @@
     closeProjectModal.addEventListener('click', () => modalOverlay.classList.remove('open'));
     modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) modalOverlay.classList.remove('open'); });
 
-    // 5. MİNİ TERMİNAL (TÜM KOMUTLAR VE TUŞ SESLERİYLE)
+    // 5. MİNİ TERMİNAL
     const termToggle = document.getElementById('terminalToggle');
     const termModal = document.getElementById('terminalModal');
     const closeTerm = document.getElementById('closeTerminal');
